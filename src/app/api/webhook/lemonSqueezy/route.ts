@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs"; // Add this line
 
 export async function POST(req: NextRequest) {
   try {

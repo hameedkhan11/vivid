@@ -12,51 +12,58 @@ interface ThemeCardProps {
   controls: AnimationControls;
 }
 
-export const ThemeCard = ({ title, description, content, variant, theme, controls }: ThemeCardProps) => {
+export const ThemeCard = ({
+  title,
+  description,
+  content,
+  variant,
+  theme,
+  controls,
+}: ThemeCardProps) => {
   const variants = {
     left: {
       hidden: { opacity: 0, x: "-50%", y: "-50%", scale: 0.9, rotate: 0 },
-      visible: { 
-        opacity: 1, 
-        x: "-25%", 
-        y: "-25%", 
-        scale: 0.95, 
+      visible: {
+        opacity: 1,
+        x: "-25%",
+        y: "-25%",
+        scale: 0.95,
         rotate: -10,
-        transition: { 
+        transition: {
           type: "spring",
           stiffness: 300,
           damping: 30,
-          delay: 0.1 
-        } 
+          delay: 0.1,
+        },
       },
     },
     right: {
       hidden: { opacity: 0, x: "50%", y: "50%", scale: 0.9, rotate: 0 },
-      visible: { 
-        opacity: 1, 
-        x: "25%", 
-        y: "25%", 
-        scale: 0.95, 
+      visible: {
+        opacity: 1,
+        x: "25%",
+        y: "25%",
+        scale: 0.95,
         rotate: 10,
-        transition: { 
+        transition: {
           type: "spring",
           stiffness: 300,
           damping: 30,
-          delay: 0.1 
-        } 
+          delay: 0.1,
+        },
       },
     },
     main: {
       hidden: { opacity: 0, scale: 0.9 },
-      visible: { 
-        opacity: 1, 
+      visible: {
+        opacity: 1,
         scale: 1,
-        transition: { 
+        transition: {
           type: "spring",
           stiffness: 300,
           damping: 30,
-          delay: 0.2 
-        } 
+          delay: 0.2,
+        },
       },
     },
   };
@@ -67,11 +74,11 @@ export const ThemeCard = ({ title, description, content, variant, theme, control
       animate={controls}
       variants={variants[variant]}
       className="absolute w-full max-w-3xl"
-      style={{ zIndex: variant === 'main' ? 10 : 0 }}
+      style={{ zIndex: variant === "main" ? 10 : 0 }}
     >
-      <Card 
+      <Card
         className="h-full shadow-2xl backdrop-blur-sm"
-        style={{ 
+        style={{
           backgroundColor: theme.slideBackgroundColor,
           border: `1px solid ${theme.accentColor}20`,
         }}
@@ -79,13 +86,13 @@ export const ThemeCard = ({ title, description, content, variant, theme, control
         <div className="flex flex-col md:flex-row">
           <CardContent className="flex-1 p-8 space-y-6">
             <div className="space-y-3">
-              <h2 
+              <h2
                 className="text-3xl font-bold tracking-tight"
                 style={{ color: theme.accentColor }}
               >
                 {title}
               </h2>
-              <p 
+              <p
                 className="text-lg"
                 style={{ color: `${theme.accentColor}90` }}
               >
@@ -108,4 +115,3 @@ export const ThemeCard = ({ title, description, content, variant, theme, control
     </motion.div>
   );
 };
-

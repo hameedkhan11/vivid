@@ -166,7 +166,7 @@ const generateImageUrl = async (prompt: string): Promise<string> => {
     console.log("⚠️ Using placeholder image as Gemini doesn't directly support image generation yet");
     
     // Generate a unique placeholder based on the prompt to simulate different images
-    const hash = await hashString(prompt);
+    // const hash = await hashString(prompt);
     const placeholderUrl = `https://placehold.co/1024x1024/png?text=${encodeURIComponent(prompt.substring(0, 20))}`;
     
     // Download the image from the service
@@ -192,11 +192,11 @@ const generateImageUrl = async (prompt: string): Promise<string> => {
 };
 
 // Helper function to create a simple hash from a string for unique placeholders
-async function hashString(str: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  return hashHex.substring(0, 8); // Return first 8 characters for brevity
-}
+// async function hashString(str: string): Promise<string> {
+//   const encoder = new TextEncoder();
+//   const data = encoder.encode(str);
+//   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+//   const hashArray = Array.from(new Uint8Array(hashBuffer));
+//   const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+//   return hashHex.substring(0, 8); // Return first 8 characters for brevity
+// }

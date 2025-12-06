@@ -17,8 +17,14 @@ import { generateImages } from "@/actions/chatgpt";
 import { Slide } from "@/lib/types";
 
 const Page = () => {
-  const { setSlides, setProject, currentTheme, setCurrentTheme, slides, resetSlideStore } =
-    useSlideStore();
+  const {
+    setSlides,
+    setProject,
+    currentTheme,
+    setCurrentTheme,
+    slides,
+    resetSlideStore,
+  } = useSlideStore();
   const { toast } = useToast();
   const params = useParams();
   const { setTheme } = useTheme();
@@ -50,14 +56,12 @@ const Page = () => {
         setTheme(findTheme?.type === "dark" ? "dark" : "light");
         setProject(res.data);
 
-        const slides = JSON.parse(JSON.stringify(res.data.slides))
+        const slides = JSON.parse(JSON.stringify(res.data.slides));
         if (res.data.slides && slides.length > 0) {
           console.log("🟢 Setting slides");
           setSlides(slides);
-         
         } else {
           await fetchSlides();
-        
         }
       } catch (error) {
         console.error("Error fetching slides:", error);
@@ -72,9 +76,8 @@ const Page = () => {
         setImageLoading(false);
       }
     })();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.presentationId]);
-
 
   const fetchSlides = async () => {
     try {
@@ -103,13 +106,13 @@ const Page = () => {
           .replace(/```/g, "")
           .trim();
 
-          console.log("🟢 Buffer:", cleanedBuffer);
+        console.log("🟢 Buffer:", cleanedBuffer);
 
         try {
           const data = JSON.parse(cleanedBuffer);
           buffer = "";
           console.log("🟢 Data:", data);
-          if(data?.error) {
+          if (data?.error) {
             toast({
               title: "Error",
               description: "An unexpected error occurred",
@@ -121,8 +124,6 @@ const Page = () => {
           console.log("🟢 Saving");
           setIsLoading(false);
 
-
-
           const updateSlide = await updateSlides(
             params.presentationId as string,
             JSON.parse(JSON.stringify(slides))
@@ -132,8 +133,8 @@ const Page = () => {
           }
 
           await fetchImages(data);
-        
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           if (cleanedBuffer.startsWith("[")) {
             try {
@@ -141,9 +142,9 @@ const Page = () => {
               const data = JSON.parse(repaired);
               setSlides(data);
               console.log("🟢 repaired data:", data);
-               // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
             } catch (innerError) {
-                 // Wait for more data
+              // Wait for more data
               // const lastValidIndex = cleanedBuffer.lastIndexOf("}");
               // if (lastValidIndex !== -1) {
               //   try {
@@ -160,9 +161,6 @@ const Page = () => {
           }
         }
       }
-   
-
-  
     } catch (error) {
       console.error("Error:", error);
       toast({
@@ -174,25 +172,27 @@ const Page = () => {
     }
   };
 
-  const fetchImages = async (slides:Slide[]) => {
-   
+  const fetchImages = async (slides: Slide[]) => {
     try {
       console.log("🟢 Fetching images...");
-  
+
       const updatedSlides = await generateImages(slides);
       if (updatedSlides.status !== 200 || !updatedSlides.data) {
         throw new Error("Failed to generate images");
       }
-  
-      console.log("🟢 Images generated successfully, updating slides...", updatedSlides);
+
+      console.log(
+        "🟢 Images generated successfully, updating slides...",
+        updatedSlides
+      );
       setSlides(updatedSlides.data);
-  
+
       // Save updated slides in the database
       const updateSlide = await updateSlides(
         params.presentationId as string,
         JSON.stringify(updatedSlides.data)
       );
-  
+
       if (updateSlide.status === 200 && updateSlide.data) {
         setProject(updateSlide.data);
       }
@@ -208,8 +208,7 @@ const Page = () => {
     }
   };
 
-
-  if(pageLoading) {
+  if (pageLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         <Loader2 size={48} className="animate-spin" />

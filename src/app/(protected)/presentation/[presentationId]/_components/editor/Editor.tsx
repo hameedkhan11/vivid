@@ -33,7 +33,7 @@ const DraggableSlide: React.FC<DraggableSlideProps> = ({
   moveSlide,
   handleDelete,
   isEditable,
-  imageLoading=false
+  imageLoading = false,
 }) => {
   const ref = useRef(null);
   const { currentSlide, setCurrentSlide, currentTheme, updateContentItem } =
@@ -189,7 +189,7 @@ interface EditorProps {
 const Editor: React.FC<EditorProps> = ({
   isEditable,
   loading,
-  imageLoading=false
+  imageLoading = false,
 }: EditorProps) => {
   const {
     getOrderedSlides,

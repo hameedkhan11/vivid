@@ -22,7 +22,7 @@ export const ThemePicker = ({
 }: ThemePickerProps) => {
   const { toast } = useToast();
   const router = useRouter();
-  const { project, currentTheme , resetSlideStore} = useSlideStore();
+  const { project, currentTheme, resetSlideStore } = useSlideStore();
   const [loading, setLoading] = useState(false);
   const params = useParams();
 
@@ -48,13 +48,15 @@ export const ThemePicker = ({
     }
 
     try {
-      const res = await updateTheme(params.presentationId as string, currentTheme.name);
-
+      const res = await updateTheme(
+        params.presentationId as string,
+        currentTheme.name
+      );
 
       if (res.status !== 200 && !res?.data) {
         throw new Error("Failed to update theme");
       }
-      resetSlideStore()
+      resetSlideStore();
       router.push(`/presentation/${params?.presentationId}`);
     } catch (e) {
       console.log(e);
@@ -125,7 +127,6 @@ export const ThemePicker = ({
                 onClick={() => {
                   onThemeSelect(theme);
                 }}
-               
                 className="flex flex-col items-center justify-start p-6 w-full h-auto"
                 style={{
                   fontFamily: theme.fontFamily,

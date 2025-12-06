@@ -48,17 +48,22 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
     slideId,
     imageLoading=false
   }) => {
-    if (!content.id) {
-      console.error("ContentRenderer received content without an id", content);
-      return null;
-    }
 
+    // FIX: Move useCallback hook call to the top level before any conditional returns
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        // We can safely access content.id here because the check below
+        // will ensure the component doesn't render if content or content.id is missing.
         onContentChange(content.id, e.target.value);
       },
-      [content.id, onContentChange]
+      [content?.id, onContentChange] // Use optional chaining for safety in dependency array
     );
+
+    // Now perform the defensive checks after the hook calls
+    if (!content || !content.id) {
+      console.error("ContentRenderer received invalid content", content);
+      return null;
+    }
 
     const commonProps = {
       placeholder: content.placeholder,
@@ -118,7 +123,7 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
               onChange={(newContent) =>
                 onContentChange(
                   content.id,
-                  newContent !== null ? newContent : ""
+                  newContent !== null ? newContent : [] // Changed "" to [] based on string[][] type
                 )
               }
               initialRowSize={content.initialColumns}
@@ -144,6 +149,7 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
             </motion.div>
           );
         }
+         console.error(`Resizable-column content is not an array for ID: ${content.id}`, content.content);
         return null;
       case "image":
         return (
@@ -169,35 +175,50 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
           </motion.div>
         );
       case "numberedList":
-        return (
-          <motion.div {...animationProps} className="w-full h-full">
-            <NumberedList
-              items={content.content as string[]}
-              onChange={(newItems) => onContentChange(content.id, newItems)}
-              className={content.className}
-            />
-          </motion.div>
-        );
+         if (Array.isArray(content.content)) {
+            return (
+              <motion.div {...animationProps} className="w-full h-full">
+                <NumberedList
+                  items={content.content as string[]}
+                  onChange={(newItems: string[]) => onContentChange(content.id, newItems)}
+                  className={content.className}
+                  isEditable={isEditable}
+                />
+              </motion.div>
+            );
+         }
+         console.error(`NumberedList content is not an array for ID: ${content.id}`, content.content);
+         return null;
       case "bulletList":
-        return (
-          <motion.div {...animationProps} className="w-full h-full">
-            <BulletList
-              items={content.content as string[]}
-              onChange={(newItems) => onContentChange(content.id, newItems)}
-              className={content.className}
-            />
-          </motion.div>
-        );
+          if (Array.isArray(content.content)) {
+              return (
+                <motion.div {...animationProps} className="w-full h-full">
+                  <BulletList
+                    items={content.content as string[]}
+                    onChange={(newItems: string[]) => onContentChange(content.id, newItems)}
+                    className={content.className}
+                    isEditable={isEditable}
+                  />
+                </motion.div>
+              );
+           }
+           console.error(`BulletList content is not an array for ID: ${content.id}`, content.content);
+           return null;
       case "todoList":
-        return (
-          <motion.div {...animationProps} className="w-full h-full">
-            <TodoList
-              items={content.content as string[]}
-              onChange={(newItems) => onContentChange(content.id, newItems)}
-              className={content.className}
-            />
-          </motion.div>
-        );
+         if (Array.isArray(content.content)) {
+              return (
+                <motion.div {...animationProps} className="w-full h-full">
+                  <TodoList
+                    items={content.content as string[]}
+                    onChange={(newItems: string[]) => onContentChange(content.id, newItems)}
+                    className={content.className}
+                    isEditable={isEditable}
+                  />
+                </motion.div>
+              );
+           }
+            console.error(`TodoList content is not an array for ID: ${content.id}`, content.content);
+            return null;
       case "calloutBox":
         return (
           <motion.div {...animationProps} className="w-full h-full">
@@ -213,25 +234,30 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
         return (
           <motion.div {...animationProps} className="w-full h-full">
             <CodeBlock
-              code={content.code}
-              language={content.language}
-              onChange={() => {}}
+              code={content.code as string || ""}
+              language={content.language as string || ""}
+              onChange={(newCode: string) => onContentChange(content.id, newCode)}
               className={content.className}
+              // isEditable={isEditable}
             />
           </motion.div>
         );
       case "tableOfContents":
-        return (
-          <motion.div {...animationProps} className="w-full h-full">
-            <TableOfContents
-              items={content.content as string[]}
-              onItemClick={(id) => {
-                console.log(`Navigate to section: ${id}`);
-              }}
-              className={content.className}
-            />
-          </motion.div>
-        );
+         if (Array.isArray(content.content)) {
+            return (
+              <motion.div {...animationProps} className="w-full h-full">
+                <TableOfContents
+                  items={content.content as string[]}
+                  onItemClick={(id) => {
+                    console.log(`Navigate to section: ${id}`);
+                  }}
+                  className={content.className}
+                />
+              </motion.div>
+            );
+         }
+         console.error(`TableOfContents content is not an array for ID: ${content.id}`, content.content);
+         return null;
       case "divider":
         return (
           <motion.div {...animationProps} className="w-full h-full">
@@ -284,8 +310,10 @@ const ContentRenderer: React.FC<MasterRecursiveComponentProps> = React.memo(
             </motion.div>
           );
         }
+        console.error(`Column content is not an array for ID: ${content.id}`, content.content);
         return null;
       default:
+        console.warn(`Unknown content type: ${content.type} for ID: ${content.id}`);
         return null;
     }
   }
@@ -309,32 +337,21 @@ export const MasterRecursiveComponent: React.FC<MasterRecursiveComponentProps> =
       return null;
     }
 
-    if (isPreview) {
-      return (
-        <ContentRenderer
-          content={content}
-          onContentChange={onContentChange}
-          isPreview={isPreview}
-          isEditable={isEditable}
-          slideId={slideId}
-          index={index}
-          imageLoading={imageLoading}
-        />
-      );
-    }
+    // Removed the conditional render based on isPreview here
+    // and rely on ContentRenderer to handle internal preview logic.
+    // The DropZone logic for top-level items should ideally be in the parent component
+    // that maps over the top-level content items.
 
     return (
-      <React.Fragment>
-        <ContentRenderer
-          content={content}
-          onContentChange={onContentChange}
-          isPreview={isPreview}
-          isEditable={isEditable}
-          slideId={slideId}
-          index={index}
-          imageLoading={imageLoading}
-        />
-      </React.Fragment>
+      <ContentRenderer
+        content={content}
+        onContentChange={onContentChange} 
+        isPreview={isPreview}
+        isEditable={isEditable}
+        slideId={slideId}
+        index={index}
+        imageLoading={imageLoading}
+      />
     );
   }
 );

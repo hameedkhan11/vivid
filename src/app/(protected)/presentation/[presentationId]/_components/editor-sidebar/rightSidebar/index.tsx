@@ -88,7 +88,7 @@ const EditorSidebar = () => {
             }}
           >
             <ScrollArea className="h-[400px]">
-              <div className="p-4 fle flex-col space-y-6">
+              <div className="p-4 flex flex-col space-y-6">
                 {component.map((group, idx) => (
                   <div className="space-y-2" key={idx}>
                     <h3 className="text-sm font-medium text-muted-foreground px-1">

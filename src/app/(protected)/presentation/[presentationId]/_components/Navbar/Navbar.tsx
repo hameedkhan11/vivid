@@ -9,13 +9,15 @@ import SellTemplate from "./SellTemplate";
 import PresentationMode from "./PresentationMode";
 import { useToast } from "@/hooks/use-toast";
 
-const Navbar = ({presentationId}:{presentationId:string}) => {
+const Navbar = ({ presentationId }: { presentationId: string }) => {
   const { currentTheme } = useSlideStore();
   const [isPresentationMode, setIsPresentationMode] = useState(false);
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/share/${presentationId}`);
+    navigator.clipboard.writeText(
+      `${window.location.origin}/share/${presentationId}`
+    );
     toast({
       title: "Link Copied",
       description: "The link has been copied to your clipboard",
@@ -32,9 +34,13 @@ const Navbar = ({presentationId}:{presentationId:string}) => {
       }}
     >
       <Link href="/dashboard" passHref>
-        <Button variant="outline" className={`flex items-center gap-2`} style={{
-           backgroundColor: currentTheme.backgroundColor,
-        }}>
+        <Button
+          variant="outline"
+          className={`flex items-center gap-2`}
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+          }}
+        >
           <Home className="w-4 h-4" />
           <span className="hidden sm:inline ">Return Home</span>
         </Button>
@@ -48,10 +54,13 @@ const Navbar = ({presentationId}:{presentationId:string}) => {
       </Link>
 
       <div className="flex items-center gap-4">
-        <Button style={{
-           backgroundColor: currentTheme.backgroundColor,
-        }} variant="outline"  onClick={handleCopy}>
-
+        <Button
+          style={{
+            backgroundColor: currentTheme.backgroundColor,
+          }}
+          variant="outline"
+          onClick={handleCopy}
+        >
           <Share className="w-4 h-4" />
         </Button>
         <SellTemplate />
